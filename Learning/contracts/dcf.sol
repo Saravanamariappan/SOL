@@ -5,6 +5,8 @@ contract OwnerOnly {
 
     address public owner;
 
+    mapping(address => bool) public users;
+
     constructor() {
         owner = msg.sender;
     }
@@ -14,7 +16,25 @@ contract OwnerOnly {
         _;
     }
 
-    function accessOwner() public view onlyOwner returns (string memory) {
-        return "Owner accessed successfully";
+    modifier onlyUser() {
+        require(users[msg.sender], "User is not registered");
+        _;
+    }
+
+    function addUser(address user) public onlyOwner {
+        users[user] = true;
+    }
+
+    function removeUser(address user) public onlyOwner {
+        users[user] = false;
+    }
+
+    function accessUser()
+        public
+        view
+        onlyUser
+        returns (string memory)
+    {
+        return "User accessed successfully";
     }
 }
